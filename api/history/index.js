@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
       const limit = parseInt(req.query.limit) || 100;
       const offset = parseInt(req.query.offset) || 0;
       
-      const data = db.getAllHistory(limit, offset);
-      const total = db.getTotalCount();
+      const data = await db.getAllHistory(limit, offset);
+      const total = await db.getTotalCount();
       
       return res.json({
         success: true,

@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     }
     
     try {
-      const historyId = db.saveResult({
+      const historyId = await db.saveResult({
         allocation_amount: input.allocation_amount,
         input: input,
         result: result,

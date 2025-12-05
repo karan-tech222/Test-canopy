@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     if (req.method === 'GET') {
       console.log(`[API] GET /api/history/${id}`);
       
-      const data = db.getHistoryById(parseInt(id));
+      const data = await db.getHistoryById(parseInt(id));
       
       if (!data) {
         return res.status(404).json({
@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
     if (req.method === 'DELETE') {
       console.log(`[API] DELETE /api/history/${id}`);
       
-      const deleted = db.deleteHistoryRecord(parseInt(id));
+      const deleted = await db.deleteHistoryRecord(parseInt(id));
       
       if (!deleted) {
         return res.status(404).json({

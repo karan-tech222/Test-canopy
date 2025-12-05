@@ -100,45 +100,44 @@ All API endpoints are available as serverless functions:
 
 ## Environment Variables
 
-The application works without additional environment variables, but you can set them in Vercel if needed:
+The Vercel KV environment variables are automatically set when you create a KV database. No manual configuration needed!
 
-1. Go to your project in Vercel Dashboard
-2. Navigate to Settings → Environment Variables
-3. Add variables (if needed):
-   - `NODE_ENV` (default: production)
+Auto-configured by Vercel:
+- `KV_REST_API_URL` - Automatically set
+- `KV_REST_API_TOKEN` - Automatically set
+- `KV_REST_API_READ_ONLY_TOKEN` - Automatically set
 
 ## Database Storage
 
-⚠️ **Important Note about Database Persistence**
+The application now uses **Vercel KV** (Redis) for data storage:
 
-The application uses SQLite for data storage. On Vercel's serverless platform:
+- **Local Development**: Uses in-memory storage (data not persisted)
+- **Vercel Production**: Uses Vercel KV for persistent storage
 
-- Each serverless function has access to `/tmp` directory (500 MB)
-- `/tmp` storage is **ephemeral** and cleared between deployments
-- Data will be **lost** between cold starts and deployments
+### Setting up Vercel KV (Required for Production):
 
-### Recommended Solutions for Production:
+1. Go to your project in Vercel Dashboard
+2. Navigate to **Storage** tab
+3. Click **Create Database** → **KV**
+4. Name your database (e.g., `allocation-history`)
+5. Click **Create**
+6. The environment variables will be automatically added to your project
 
-1. **Vercel Postgres** (Recommended)
-   - Fully managed PostgreSQL database
-   - Set up: https://vercel.com/docs/storage/vercel-postgres
+That's it! The application will automatically use Vercel KV when deployed.
 
-2. **Vercel KV** (Redis)
-   - For caching and session data
-   - Set up: https://vercel.com/docs/storage/vercel-kv
+### Local Development with KV (Optional):
 
-3. **External Database**
-   - PostgreSQL (Supabase, Neon, etc.)
-   - MongoDB (MongoDB Atlas)
-   - Any cloud database service
+If you want to test with KV locally:
 
-4. **Vercel Blob Storage**
-   - For file storage
-   - Set up: https://vercel.com/docs/storage/vercel-blob
+1. Get your KV credentials from Vercel Dashboard
+2. Create `.env` file in the root:
+   ```
+   KV_REST_API_URL=your_kv_url
+   KV_REST_API_TOKEN=your_kv_token
+   ```
+3. Run `vercel dev`
 
-### To Migrate from SQLite:
-
-You'll need to update the database layer in `api/database.js` to connect to your chosen database service.
+Otherwise, local development uses in-memory storage by default.
 
 ## Local Development
 

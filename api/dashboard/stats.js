@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
   try {
     console.log('[API] GET /api/dashboard/stats');
     
-    const stats = db.getStatistics();
-    const recentHistory = db.getRecentHistory(5);
+    const stats = await db.getStatistics();
+    const recentHistory = await db.getRecentHistory(5);
     
     return res.json({
       success: true,

@@ -4,7 +4,6 @@
   "description": "Serverless API for investor allocation proration",
   "main": "index.js",
   "dependencies": {
-    "better-sqlite3": "^9.6.0",
-    "cors": "^2.8.5"
+    "@vercel/kv": "^1.0.1"
   }
 }

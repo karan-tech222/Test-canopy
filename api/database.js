@@ -1,167 +1,156 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+const { kv } = require('@vercel/kv');
 
-let db = null;
+// In-memory fallback for local development
+let memoryStore = [];
+let nextId = 1;
 
-function getDatabase() {
-  if (!db) {
-    // For Vercel, use /tmp directory for writable storage
-    const dbPath = process.env.VERCEL 
-      ? '/tmp/history.db'
-      : path.join(__dirname, '..', 'backend', 'data', 'history.db');
-    
-    db = new Database(dbPath);
-    db.pragma('foreign_keys = ON');
-    db.pragma('journal_mode = WAL');
-    initializeDatabase();
-  }
-  return db;
-}
+const isVercel = process.env.VERCEL || process.env.KV_REST_API_URL;
 
-function initializeDatabase() {
-  const createTableSQL = `
-    CREATE TABLE IF NOT EXISTS allocation_history (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      allocation_amount REAL NOT NULL,
-      total_allocated REAL NOT NULL,
-      investor_count INTEGER NOT NULL,
-      utilization_rate REAL NOT NULL,
-      input_data TEXT NOT NULL,
-      result_data TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      notes TEXT
-    )
-  `;
-  
-  db.exec(createTableSQL);
-  db.exec('CREATE INDEX IF NOT EXISTS idx_created_at ON allocation_history(created_at DESC)');
-}
-
-function saveResult(data) {
-  const database = getDatabase();
+async function saveResult(data) {
   const { allocation_amount, input, result, notes = '' } = data;
   
   const totalAllocated = Object.values(result).reduce((sum, val) => sum + val, 0);
   const investorCount = Object.keys(result).length;
   const utilizationRate = (totalAllocated / allocation_amount) * 100;
   
-  const insertSQL = `
-    INSERT INTO allocation_history (
-      allocation_amount,
-      total_allocated,
-      investor_count,
-      utilization_rate,
-      input_data,
-      result_data,
-      notes
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-  
-  const stmt = database.prepare(insertSQL);
-  const info = stmt.run(
+  const record = {
+    id: nextId++,
     allocation_amount,
-    totalAllocated,
-    investorCount,
-    utilizationRate,
-    JSON.stringify(input),
-    JSON.stringify(result),
+    total_allocated: totalAllocated,
+    investor_count: investorCount,
+    utilization_rate: utilizationRate,
+    input_data: input,
+    result_data: result,
+    created_at: new Date().toISOString(),
     notes
-  );
+  };
   
-  return info.lastInsertRowid;
+  if (isVercel) {
+    try {
+      await kv.zadd('history:ids', { score: Date.now(), member: record.id });
+      await kv.set(`history:${record.id}`, JSON.stringify(record));
+      return record.id;
+    } catch (error) {
+      console.error('KV error, using memory:', error);
+      memoryStore.push(record);
+      return record.id;
+    }
+  } else {
+    memoryStore.push(record);
+    return record.id;
+  }
 }
 
-function getAllHistory(limit = 100, offset = 0) {
-  const database = getDatabase();
-  const selectSQL = `
-    SELECT 
-      id,
-      allocation_amount,
-      total_allocated,
-      investor_count,
-      utilization_rate,
-      input_data,
-      result_data,
-      created_at,
-      notes
-    FROM allocation_history
-    ORDER BY created_at DESC
-    LIMIT ? OFFSET ?
-  `;
-  
-  const stmt = database.prepare(selectSQL);
-  const rows = stmt.all(limit, offset);
-  
-  return rows.map(row => ({
-    ...row,
-    input_data: JSON.parse(row.input_data),
-    result_data: JSON.parse(row.result_data)
-  }));
+async function getAllHistory(limit = 100, offset = 0) {
+  if (isVercel) {
+    try {
+      const ids = await kv.zrange('history:ids', 0, -1, { rev: true });
+      const records = [];
+      
+      for (let i = offset; i < Math.min(offset + limit, ids.length); i++) {
+        const data = await kv.get(`history:${ids[i]}`);
+        if (data) {
+          records.push(typeof data === 'string' ? JSON.parse(data) : data);
+        }
+      }
+      
+      return records;
+    } catch (error) {
+      console.error('KV error, using memory:', error);
+      return memoryStore.slice(offset, offset + limit).reverse();
+    }
+  } else {
+    return memoryStore.slice(offset, offset + limit).reverse();
+  }
 }
 
-function getHistoryById(id) {
-  const database = getDatabase();
-  const selectSQL = `
-    SELECT 
-      id,
-      allocation_amount,
-      total_allocated,
-      investor_count,
-      utilization_rate,
-      input_data,
-      result_data,
-      created_at,
-      notes
-    FROM allocation_history
-    WHERE id = ?
-  `;
+async function getHistoryById(id) {
+  if (isVercel) {
+    try {
+      const data = await kv.get(`history:${id}`);
+      if (!data) return null;
+      return typeof data === 'string' ? JSON.parse(data) : data;
+    } catch (error) {
+      console.error('KV error, using memory:', error);
+      return memoryStore.find(r => r.id === id) || null;
+    }
+  } else {
+    return memoryStore.find(r => r.id === id) || null;
+  }
+}
+
+async function getTotalCount() {
+  if (isVercel) {
+    try {
+      return await kv.zcard('history:ids');
+    } catch (error) {
+      console.error('KV error, using memory:', error);
+      return memoryStore.length;
+    }
+  } else {
+    return memoryStore.length;
+  }
+}
+
+async function deleteHistoryRecord(id) {
+  if (isVercel) {
+    try {
+      await kv.zrem('history:ids', id);
+      await kv.del(`history:${id}`);
+      return true;
+    } catch (error) {
+      console.error('KV error, using memory:', error);
+      const index = memoryStore.findIndex(r => r.id === id);
+      if (index > -1) {
+        memoryStore.splice(index, 1);
+        return true;
+      }
+      return false;
+    }
+  } else {
+    const index = memoryStore.findIndex(r => r.id === id);
+    if (index > -1) {
+      memoryStore.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+}
+
+async function getRecentHistory(limit = 5) {
+  return await getAllHistory(limit, 0);
+}
+
+async function getStatistics() {
+  const allHistory = await getAllHistory(1000, 0);
   
-  const stmt = database.prepare(selectSQL);
-  const row = stmt.get(id);
-  
-  if (!row) {
-    return null;
+  if (allHistory.length === 0) {
+    return {
+      total_calculations: 0,
+      avg_allocation_amount: 0,
+      avg_total_allocated: 0,
+      avg_investor_count: 0,
+      avg_utilization_rate: 0,
+      last_calculation_date: null
+    };
   }
   
-  return {
-    ...row,
-    input_data: JSON.parse(row.input_data),
-    result_data: JSON.parse(row.result_data)
-  };
-}
-
-function getTotalCount() {
-  const database = getDatabase();
-  const stmt = database.prepare('SELECT COUNT(*) as count FROM allocation_history');
-  return stmt.get().count;
-}
-
-function deleteHistoryRecord(id) {
-  const database = getDatabase();
-  const stmt = database.prepare('DELETE FROM allocation_history WHERE id = ?');
-  const info = stmt.run(id);
-  return info.changes > 0;
-}
-
-function getRecentHistory(limit = 5) {
-  return getAllHistory(limit, 0);
-}
-
-function getStatistics() {
-  const database = getDatabase();
-  const statsSQL = `
-    SELECT 
-      COUNT(*) as total_calculations,
-      AVG(allocation_amount) as avg_allocation_amount,
-      AVG(total_allocated) as avg_total_allocated,
-      AVG(investor_count) as avg_investor_count,
-      AVG(utilization_rate) as avg_utilization_rate,
-      MAX(created_at) as last_calculation_date
-    FROM allocation_history
-  `;
+  const total = allHistory.length;
+  const sum = allHistory.reduce((acc, record) => ({
+    allocation_amount: acc.allocation_amount + record.allocation_amount,
+    total_allocated: acc.total_allocated + record.total_allocated,
+    investor_count: acc.investor_count + record.investor_count,
+    utilization_rate: acc.utilization_rate + record.utilization_rate
+  }), { allocation_amount: 0, total_allocated: 0, investor_count: 0, utilization_rate: 0 });
   
-  const stmt = database.prepare(statsSQL);
-  return stmt.get();
+  return {
+    total_calculations: total,
+    avg_allocation_amount: sum.allocation_amount / total,
+    avg_total_allocated: sum.total_allocated / total,
+    avg_investor_count: Math.round(sum.investor_count / total),
+    avg_utilization_rate: sum.utilization_rate / total,
+    last_calculation_date: allHistory[0]?.created_at || null
+  };
 }
 
 module.exports = {
