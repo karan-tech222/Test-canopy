@@ -1,0 +1,78 @@
+.recent-table-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  grid-column: 1 / -1;
+}
+
+.table-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+}
+
+.table-empty {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recent-table thead {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+}
+
+.recent-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recent-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+  transition: background 0.2s;
+}
+
+.recent-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.recent-table td {
+  padding: 14px 16px;
+  font-size: 0.95rem;
+}
+
+.calc-id {
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+.calc-amount {
+  font-weight: 700;
+  color: #059669;
+}
+
+.calc-investors {
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.calc-date {
+  color: #64748b;
+  font-size: 0.9rem;
+}

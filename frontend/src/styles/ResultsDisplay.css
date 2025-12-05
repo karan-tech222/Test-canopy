@@ -1,0 +1,206 @@
+.results-section {
+  position: sticky;
+  top: 20px;
+}
+
+.results-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #bae6fd;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #0369a1;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+/* Results Table */
+.results-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table thead {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+}
+
+.results-table th {
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.results-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+  transition: background 0.2s;
+}
+
+.results-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.results-table td {
+  padding: 14px 12px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.investor-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.allocated-amount {
+  font-weight: 700;
+  color: #059669;
+}
+
+.fulfillment-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.fulfillment-badge.full {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.fulfillment-badge.prorated {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Export Section */
+.export-section {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #e9d5ff;
+}
+
+.export-label {
+  font-weight: 600;
+  color: #6b21a8;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.export-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.export-btn {
+  padding: 10px 16px;
+  border: 2px solid;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.export-btn.excel {
+  background: white;
+  color: #16a34a;
+  border-color: #22c55e;
+}
+
+.export-btn.excel:hover {
+  background: #22c55e;
+  color: white;
+}
+
+.export-btn.pdf {
+  background: white;
+  color: #dc2626;
+  border-color: #ef4444;
+}
+
+.export-btn.pdf:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.export-btn.word {
+  background: white;
+  color: #2563eb;
+  border-color: #3b82f6;
+}
+
+.export-btn.word:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.export-btn.clipboard {
+  background: white;
+  color: #7c3aed;
+  border-color: #8b5cf6;
+}
+
+.export-btn.clipboard:hover {
+  background: #8b5cf6;
+  color: white;
+}

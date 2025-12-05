@@ -1,0 +1,10 @@
+{
+  "name": "allocation-proration-api",
+  "version": "1.0.0",
+  "description": "Serverless API for investor allocation proration",
+  "main": "index.js",
+  "dependencies": {
+    "better-sqlite3": "^9.6.0",
+    "cors": "^2.8.5"
+  }
+}

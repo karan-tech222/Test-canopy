@@ -1,0 +1,52 @@
+.investor-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+
+.investor-card:hover {
+  border-color: #cbd5e1;
+  background: white;
+}
+
+.investor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.investor-number {
+  font-weight: 700;
+  color: #60a5fa;
+  font-size: 0.9rem;
+}
+
+.remove-btn {
+  width: 28px;
+  height: 28px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 2px solid #fca5a5;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.remove-btn:hover {
+  background: #fca5a5;
+  transform: scale(1.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

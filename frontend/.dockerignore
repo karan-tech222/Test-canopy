@@ -1,0 +1,40 @@
+# Node modules
+node_modules
+npm-debug.log
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+
+# Build output (will be created in container)
+build
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Test files
+*.test.ts
+*.test.tsx
+src/**/*.test.ts
+src/**/*.test.tsx
+
+# Documentation
+README.md

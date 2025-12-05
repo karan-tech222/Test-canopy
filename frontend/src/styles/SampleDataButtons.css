@@ -1,0 +1,47 @@
+/* Sample Data Section */
+
+.sample-data-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  border: 1px solid #bae6fd;
+}
+
+.sample-label {
+  display: block;
+  font-weight: 600;
+  color: #0369a1;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.sample-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.sample-btn {
+  padding: 10px 16px;
+  background: white;
+  color: #0284c7;
+  border: 2px solid #0ea5e9;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.sample-btn:hover {
+  background: #0ea5e9;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.sample-btn:active {
+  transform: translateY(0);
+}

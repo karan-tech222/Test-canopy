@@ -1,0 +1,10 @@
+backend/node_modules
+frontend/node_modules
+backend/data
+.git
+*.log
+.DS_Store
+docker-compose.yml
+Dockerfile
+*.bat
+*.sh
